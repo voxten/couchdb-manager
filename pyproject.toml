@@ -1,7 +1,7 @@
 [project]
-name = "db-app"
+name = "couchdb-manager"
 version = "1.0.0"
-description = "db app built in the Flask."
+description = "Manager Application for CouchDB built in the Flask."
 dependencies = [
     "flask",
 ]
