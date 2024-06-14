@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 <head>
     <meta charset="UTF-8">
     <title>{{ collection_id }} Content</title>
@@ -21,13 +22,13 @@
     </div>
 
     <h2>Existing Content</h2>
-    <table>
+    <table id="content-table">
         <thead>
             <tr>
                 <th></th>
-                <th>Index</th>
-                <th>Name</th>
-                <th>Description</th>
+                <th>Index<button onclick="sortTable(1)">Sort</button></th>
+                <th>Name<button onclick="sortTable(2)">Sort</button></th>
+                <th>Description<button onclick="sortTable(3)">Sort</button></th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -56,13 +57,14 @@
             {% endfor %}
         </tbody>
     </table>
-        <div id='back_to_coll'>
-            <nav>
-                <a href="{{ url_for('view_db', db_name=db_name) }}">Back to Collections</a>
-            </nav>
-        </div>
+    <div id='back_to_coll'>
+        <nav>
+            <a href="{{ url_for('view_db', db_name=db_name) }}">Back to Collections</a>
+        </nav>
+    </div>
     <footer>
-        <h4>Site Created by voxten</h4>
+        <h4><a href="https://github.com/voxten" target="_blank">Site Created by voxten</a></h4>
     </footer>
+<script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </body>
 </html>

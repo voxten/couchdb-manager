@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="{{ url_for('static', filename='scripts.js') }}"></script>
 <head>
     <meta charset="UTF-8">
     <title>{{ db_name }} Collections</title>
@@ -21,13 +22,13 @@
 
     <h2>Existing Collections</h2>
     {% if collections %}
-    <table>
+    <table id="collection-table">
         <thead>
             <tr>
                 <th></th>
-                <th>_id</th>
+                <th>_id<button onclick="sortTable(1)">Sort</button></th>
                 {% for name in content_names %}
-                <th>{{ name }}</th>
+                <th>{{ name }}<button onclick="sortTable({{ loop.index + 1 }})">Sort</button></th>
                 {% endfor %}
                 <th>Actions</th>
             </tr>
@@ -49,7 +50,6 @@
                         <input type="text" name="new_collection_id" placeholder="New Collection ID">
                         <input type="submit" value="Rename">
                     </form>
-
                 </td>
             </tr>
             {% endfor %}
@@ -63,7 +63,7 @@
         <nav>
             <a href="{{ url_for('home') }}">Back to Home</a>
         </nav>
-        <h4>Site Created by voxten</h4>
+        <h4><a href="https://github.com/voxten" target="_blank">Site Created by voxten</a></h4>
     </footer>
 </body>
 </html>
