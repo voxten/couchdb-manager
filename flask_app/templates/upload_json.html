@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<head>
+    <meta charset="UTF-8">
+    <title>CouchDB Manager</title>
+</head>
+<body>
+    <h1>CouchDB Manager</h1>
+    <nav>
+        <a href="/">Create DB</a>
+        <a href="/upload_json_page">Upload JSON</a>
+    </nav>
+    <h2>Upload JSON to Create Database and Collections</h2>
+    <div class="viewDataDiv">
+        <form action="{{ url_for('upload_json') }}" method="post" enctype="multipart/form-data">
+            <input type="file" name="json_file" accept=".json">
+            <input type="submit" value="Upload and Create">
+        </form>
+    </div>
+    <footer>
+        <h4>Site Created by voxten</h4>
+    </footer>
+</body>
+</html>

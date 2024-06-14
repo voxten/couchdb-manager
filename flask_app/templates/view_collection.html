@@ -1,36 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <head>
     <meta charset="UTF-8">
     <title>{{ collection_id }} Content</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-    </style>
 </head>
 <body>
     <h1>Content of {{ collection_id }} in {{ db_name }}</h1>
-
+    <nav>
+        <a href="/">Create DB</a>
+        <a href="/upload_json_page">Upload JSON</a>
+    </nav>
     <h2>Add Content</h2>
-    <form action="{{ url_for('add_content', db_name=db_name, collection_id=collection_id) }}" method="post">
-        <input type="text" name="content_name" placeholder="Content Name">
-        <input type="text" name="content_description" placeholder="Content Description">
-        <button type="submit">Add Content</button>
-    </form>
+    <div class="viewDataDiv">
+        <form action="{{ url_for('add_content', db_name=db_name, collection_id=collection_id) }}" method="post">
+            <input type="text" name="content_name" placeholder="Content Name">
+            <input type="text" name="content_description" placeholder="Content Description">
+            <input type="submit" value="Add Content">
+        </form>
+    </div>
 
     <h2>Existing Content</h2>
     <table>
         <thead>
             <tr>
+                <th></th>
                 <th>Index</th>
                 <th>Name</th>
                 <th>Description</th>
@@ -40,27 +34,35 @@
         <tbody>
             {% for content in doc.content %}
                 <tr>
+                    <td class='td_delete'>
+                        <form action="{{ url_for('delete_content', db_name=db_name, collection_id=collection_id, content_index=loop.index0) }}" method="post" style="display:inline;">
+                            <input type="submit" value="x">
+                        </form>
+                    </td>
                     <td>{{ loop.index0 }}</td>
                     <td>{{ content.name }}</td>
                     <td>{{ content.description }}</td>
                     <td>
                         <form action="{{ url_for('modify_content_name', db_name=db_name, collection_id=collection_id, content_index=loop.index0) }}" method="post" style="display:inline;">
                             <input type="text" name="new_name" placeholder="New Name">
-                            <button type="submit">Modify Name</button>
+                            <input type="submit" value="Modify Name">
                         </form>
                         <form action="{{ url_for('modify_content_description', db_name=db_name, collection_id=collection_id, content_index=loop.index0) }}" method="post" style="display:inline;">
                             <input type="text" name="new_description" placeholder="New Description">
-                            <button type="submit">Modify Description</button>
-                        </form>
-                        <form action="{{ url_for('delete_content', db_name=db_name, collection_id=collection_id, content_index=loop.index0) }}" method="post" style="display:inline;">
-                            <button type="submit">Delete</button>
+                            <input type="submit" value="Modify Description">
                         </form>
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ url_for('view_db', db_name=db_name) }}">Back to Collections</a>
+        <div id='back_to_coll'>
+            <nav>
+                <a href="{{ url_for('view_db', db_name=db_name) }}">Back to Collections</a>
+            </nav>
+        </div>
+    <footer>
+        <h4>Site Created by voxten</h4>
+    </footer>
 </body>
 </html>

@@ -1,36 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <head>
     <meta charset="UTF-8">
     <title>{{ db_name }} Collections</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-    </style>
 </head>
 <body>
     <h1>{{ db_name }} Collections</h1>
-
+    <nav>
+        <a href="/">Create DB</a>
+        <a href="/upload_json_page">Upload JSON</a>
+    </nav>
     <h2>Create Collection</h2>
-    <form action="{{ url_for('create_collection', db_name=db_name) }}" method="post">
-        <input type="text" name="collection_name" placeholder="Collection Name">
-        <button type="submit">Create Collection</button>
-    </form>
+    <div class="viewDataDiv">
+        <form action="{{ url_for('create_collection', db_name=db_name) }}" method="post">
+            <input type="text" name="collection_name" placeholder="Collection Name">
+            <input type="submit" value="Create Collection">
+        </form>
+    </div>
 
     <h2>Existing Collections</h2>
     {% if collections %}
     <table>
         <thead>
             <tr>
+                <th></th>
                 <th>_id</th>
                 {% for name in content_names %}
                 <th>{{ name }}</th>
@@ -41,27 +35,35 @@
         <tbody>
             {% for collection in collections %}
             <tr>
+                <td class="td_delete">
+                    <form action="{{ url_for('delete_collection', db_name=db_name, collection_id=collection._id) }}" method="post" style="display:inline;">
+                        <input type="submit" value="x">
+                    </form>
+                </td>
                 <td><a href="{{ url_for('view_collection', db_name=db_name, collection_id=collection._id) }}">{{ collection._id }}</a></td>
                 {% for name in content_names %}
                 <td>{{ collection[name] }}</td>
                 {% endfor %}
-                <td>
+                <td class='td_action'>
                     <form action="{{ url_for('rename_collection', db_name=db_name, collection_id=collection._id) }}" method="post" style="display:inline;">
                         <input type="text" name="new_collection_id" placeholder="New Collection ID">
-                        <button type="submit">Rename</button>
+                        <input type="submit" value="Rename">
                     </form>
-                    <form action="{{ url_for('delete_collection', db_name=db_name, collection_id=collection._id) }}" method="post" style="display:inline;">
-                        <button type="submit">Delete</button>
-                    </form>
+
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     {% else %}
-    <p>No collections found</p>
+    <h4>No collections found</h4>
     {% endif %}
 
-    <a href="{{ url_for('home') }}">Back to Home</a>
+    <footer>
+        <nav>
+            <a href="{{ url_for('home') }}">Back to Home</a>
+        </nav>
+        <h4>Site Created by voxten</h4>
+    </footer>
 </body>
 </html>
