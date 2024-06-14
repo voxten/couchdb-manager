@@ -5,9 +5,9 @@ html {
 }
 
 body {
-    max-width: 960px;
+    max-width: 1200px;
     margin: 0 auto;
-    box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 10px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0 3px 10px;
     background: white;
     color: #ddd;
     min-height: 250px;
@@ -33,12 +33,32 @@ td {
     padding: 8px;
 }
 
+th button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 5px;
+}
+th button:after {
+    content: '⇅';
+    font-size: 12px;
+}
+
 .td_delete {
     width: 30px;
 }
 
+.td_delete input[type=submit] {
+    background: #ff0000;
+}
+
+.td_delete input[type=submit]:hover {
+    background: #c51919;
+}
+
 .td_action {
-    width: 30%;
+    width: 35%;
 }
 
 footer nav {
@@ -136,9 +156,8 @@ ol {
 
 #all form {
     width: 120px;
-    padding: 0;
     margin: 0 auto 0 auto;
-    padding-top: 15px;
+    padding: 15px 0 0;
 }
 
 .viewDataDiv {
@@ -203,6 +222,8 @@ input[type=submit]:hover {
 nav a:hover {
     background: #092ad0;
 }
+
+
 
 body:before {
     content: '🌟';
