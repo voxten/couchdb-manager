@@ -1,7 +1,8 @@
 import os
 import json
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, send_file
 import couchdb
+import tempfile
 
 app = Flask(__name__)
 
@@ -43,19 +44,30 @@ def upload_json():
         return redirect(url_for('home'))
 
     if json_file and json_file.filename.endswith('.json'):
-        data = json.load(json_file)
-        db_name = data.get('db_name')
-        if db_name and db_name not in couch_client:
-            db = couch_client.create(db_name)
-            collections = data.get('collections', [])
-            for collection in collections:
-                doc_id = collection.get('_id')
-                content = collection.get('content', [])
-                if doc_id:
-                    db.save({"_id": doc_id, "content": content})
+        try:
+            data = json.load(json_file)
+        except json.JSONDecodeError:
+            return "Invalid JSON file", 400
+
+        if isinstance(data, list):
+            db_name = os.path.splitext(json_file.filename)[0]  # Extract the file name without extension
+            if db_name and db_name not in couch_client:
+                db = couch_client.create(db_name)
+                for collection in data:
+                    doc_id = collection.get('_id')
+                    content = collection.get('content', [])
+                    if doc_id:
+                        db.save({"_id": doc_id, "content": content})
+            else:
+                return "Database name is required or already exists", 400
+        else:
+            return "Invalid JSON structure", 400
+
         return redirect(url_for('home'))
     else:
         return "Invalid file format", 400
+
+
 
 
 @app.route('/rename_db/<db_name>', methods=['POST'])
@@ -216,6 +228,30 @@ def delete_collection(db_name, collection_id):
         if doc:
             db.delete(doc)
     return redirect(url_for('view_db', db_name=db_name))
+
+
+@app.route('/export_db/<db_name>', methods=['GET'])
+def export_db(db_name):
+    if db_name in couch_client:
+        db = couch_client[db_name]
+        data = []
+        for doc_id in db:
+            doc = db.get(doc_id)
+            if doc:
+                # Exclude '_rev' field from exported data
+                doc.pop('_rev', None)
+                data.append(doc)
+
+        # Create a temporary file and write data to it
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.json', mode='w', encoding='utf-8') as tmp_file:
+            json.dump(data, tmp_file, indent=4)
+            tmp_file_path = tmp_file.name
+
+        # Send the file to the user
+        return send_file(tmp_file_path, as_attachment=True, download_name=f"{db_name}.json")
+
+    return redirect(url_for('home'))
+
 
 
 if __name__ == '__main__':

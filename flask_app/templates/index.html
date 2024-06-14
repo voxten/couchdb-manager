@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="{{ url_for('static', filename='scripts.js') }}"></script>
 <head>
     <meta charset="UTF-8">
     <title>CouchDB Manager</title>
@@ -21,11 +22,11 @@
 
     <h2>Existing Databases</h2>
     {% if databases %}
-    <table>
+    <table id="db-table">
         <thead>
             <tr>
                 <th></th>
-                <th>Name</th>
+                <th>Name<button onclick="sortTableIndex(1)">Sort</button></th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -43,6 +44,9 @@
                         <input type="text" name="new_db_name" placeholder="New Database Name">
                         <input type="submit" value="Rename">
                     </form>
+                    <form action="{{ url_for('export_db', db_name=db) }}" method="get" style="display:inline;">
+                        <input type="submit" value="Export">
+                    </form>
                 </td>
             </tr>
             {% endfor %}
@@ -52,7 +56,7 @@
     <h4>No databases found</h4>
     {% endif %}
     <footer>
-        <h4>Site Created by voxten</h4>
+        <h4><a href="https://github.com/voxten" target="_blank">Site Created by voxten</a></h4>
     </footer>
 </body>
 </html>
