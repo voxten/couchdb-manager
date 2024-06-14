@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ db_name }} Collections</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ db_name }} Collections</h1>
+
+    <h2>Create Collection</h2>
+    <form action="{{ url_for('create_collection', db_name=db_name) }}" method="post">
+        <input type="text" name="collection_name" placeholder="Collection Name">
+        <button type="submit">Create Collection</button>
+    </form>
+
+    <h2>Existing Collections</h2>
+    {% if collections %}
+    <table>
+        <thead>
+            <tr>
+                <th>_id</th>
+                {% for name in content_names %}
+                <th>{{ name }}</th>
+                {% endfor %}
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for collection in collections %}
+            <tr>
+                <td><a href="{{ url_for('view_collection', db_name=db_name, collection_id=collection._id) }}">{{ collection._id }}</a></td>
+                {% for name in content_names %}
+                <td>{{ collection[name] }}</td>
+                {% endfor %}
+                <td>
+                    <form action="{{ url_for('rename_collection', db_name=db_name, collection_id=collection._id) }}" method="post" style="display:inline;">
+                        <input type="text" name="new_collection_id" placeholder="New Collection ID">
+                        <button type="submit">Rename</button>
+                    </form>
+                    <form action="{{ url_for('delete_collection', db_name=db_name, collection_id=collection._id) }}" method="post" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No collections found</p>
+    {% endif %}
+
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>

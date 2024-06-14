@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CouchDB Management</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>CouchDB Management</h1>
+
+    <h2>Create Database</h2>
+    <form action="{{ url_for('create_db') }}" method="post">
+        <input type="text" name="db_name" placeholder="Database Name">
+        <button type="submit">Create Database</button>
+    </form>
+
+    <h2>Existing Databases</h2>
+    {% if databases %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for db in databases %}
+            <tr>
+                <td><a href="{{ url_for('view_db', db_name=db) }}">{{ db }}</a></td>
+                <td>
+                    <form action="{{ url_for('delete_db', db_name=db) }}" method="post" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                    <form action="{{ url_for('rename_db', db_name=db) }}" method="post" style="display:inline;">
+                        <input type="text" name="new_db_name" placeholder="New Database Name">
+                        <button type="submit">Rename</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No databases found</p>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  web:
+    build: ./flask_app
+    ports:
+      - "5000:5000"
+    environment:
+      - COUCH_HOST=couchdb
+      - COUCH_PORT=5984
+      - COUCH_USER=admin
+      - COUCH_PASSWORD=admin
+    depends_on:
+      - couchdb
+  couchdb:
+    image: couchdb:latest
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=admin
+    volumes:
+      - couch-data:/opt/couchdb/data
+volumes:
+  couch-data:

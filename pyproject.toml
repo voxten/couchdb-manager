@@ -1,0 +1,7 @@
+[project]
+name = "db-app"
+version = "1.0.0"
+description = "db app built in the Flask."
+dependencies = [
+    "flask",
+]

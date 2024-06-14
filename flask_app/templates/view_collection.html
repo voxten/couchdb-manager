@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ collection_id }} Content</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Content of {{ collection_id }} in {{ db_name }}</h1>
+
+    <h2>Add Content</h2>
+    <form action="{{ url_for('add_content', db_name=db_name, collection_id=collection_id) }}" method="post">
+        <input type="text" name="content_name" placeholder="Content Name">
+        <input type="text" name="content_description" placeholder="Content Description">
+        <button type="submit">Add Content</button>
+    </form>
+
+    <h2>Existing Content</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Index</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for content in doc.content %}
+                <tr>
+                    <td>{{ loop.index0 }}</td>
+                    <td>{{ content.name }}</td>
+                    <td>{{ content.description }}</td>
+                    <td>
+                        <form action="{{ url_for('modify_content_name', db_name=db_name, collection_id=collection_id, content_index=loop.index0) }}" method="post" style="display:inline;">
+                            <input type="text" name="new_name" placeholder="New Name">
+                            <button type="submit">Modify Name</button>
+                        </form>
+                        <form action="{{ url_for('modify_content_description', db_name=db_name, collection_id=collection_id, content_index=loop.index0) }}" method="post" style="display:inline;">
+                            <input type="text" name="new_description" placeholder="New Description">
+                            <button type="submit">Modify Description</button>
+                        </form>
+                        <form action="{{ url_for('delete_content', db_name=db_name, collection_id=collection_id, content_index=loop.index0) }}" method="post" style="display:inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('view_db', db_name=db_name) }}">Back to Collections</a>
+</body>
+</html>
