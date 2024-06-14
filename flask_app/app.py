@@ -1,4 +1,5 @@
 import os
+import json
 from flask import Flask, request, render_template, redirect, url_for
 import couchdb
 
@@ -27,6 +28,36 @@ def create_db():
     return redirect(url_for('home'))
 
 
+@app.route('/upload_json_page')
+def upload_json_page():
+    return render_template('upload_json.html')
+
+
+@app.route('/upload_json', methods=['POST'])
+def upload_json():
+    if 'json_file' not in request.files:
+        return redirect(url_for('home'))
+
+    json_file = request.files['json_file']
+    if json_file.filename == '':
+        return redirect(url_for('home'))
+
+    if json_file and json_file.filename.endswith('.json'):
+        data = json.load(json_file)
+        db_name = data.get('db_name')
+        if db_name and db_name not in couch_client:
+            db = couch_client.create(db_name)
+            collections = data.get('collections', [])
+            for collection in collections:
+                doc_id = collection.get('_id')
+                content = collection.get('content', [])
+                if doc_id:
+                    db.save({"_id": doc_id, "content": content})
+        return redirect(url_for('home'))
+    else:
+        return "Invalid file format", 400
+
+
 @app.route('/rename_db/<db_name>', methods=['POST'])
 def rename_db(db_name):
     new_db_name = request.form.get('new_db_name')
@@ -49,7 +80,6 @@ def view_db(db_name):
         collections = []
         content_names = set()
 
-        # Collect all unique content names across all documents
         for doc_id in db:
             doc = db.get(doc_id)
             if doc and 'content' in doc:
@@ -57,7 +87,6 @@ def view_db(db_name):
                     if 'name' in content:
                         content_names.add(content['name'])
 
-        # Create a structured list for rendering in the template
         for doc_id in db:
             doc = db.get(doc_id)
             if doc:
@@ -69,7 +98,7 @@ def view_db(db_name):
                     collection[name] = content_desc
                 collections.append(collection)
 
-        content_names = sorted(content_names)  # Sort the names for consistent ordering
+        content_names = sorted(content_names)
         return render_template('view_db.html', db_name=db_name, collections=collections, content_names=content_names)
     return redirect(url_for('home'))
 
@@ -84,22 +113,6 @@ def view_collection(db_name, collection_id):
             return render_template('view_collection.html', db_name=db_name, collection_id=collection_id, doc=doc,
                                    content_list=content_list)
     return redirect(url_for('view_db', db_name=db_name))
-
-
-@app.route('/delete_content/<db_name>/<collection_id>/<content_index>', methods=['POST'])
-def delete_content(db_name, collection_id, content_index):
-    if db_name in couch_client:
-        db = couch_client[db_name]
-        doc = db.get(collection_id)
-        if doc and 'content' in doc:
-            try:
-                index = int(content_index)
-                if 0 <= index < len(doc['content']):
-                    del doc['content'][index]
-                    db.save(doc)
-            except ValueError:
-                pass
-    return redirect(url_for('view_collection', db_name=db_name, collection_id=collection_id))
 
 
 @app.route('/add_content/<db_name>/<collection_id>', methods=['POST'])
@@ -142,6 +155,22 @@ def modify_content_description(db_name, collection_id, content_index):
             if new_description:
                 doc['content'][int(content_index)]['description'] = new_description
                 db.save(doc)
+    return redirect(url_for('view_collection', db_name=db_name, collection_id=collection_id))
+
+
+@app.route('/delete_content/<db_name>/<collection_id>/<content_index>', methods=['POST'])
+def delete_content(db_name, collection_id, content_index):
+    if db_name in couch_client:
+        db = couch_client[db_name]
+        doc = db.get(collection_id)
+        if doc and 'content' in doc:
+            try:
+                index = int(content_index)
+                if 0 <= index < len(doc['content']):
+                    del doc['content'][index]
+                    db.save(doc)
+            except ValueError:
+                pass
     return redirect(url_for('view_collection', db_name=db_name, collection_id=collection_id))
 
 

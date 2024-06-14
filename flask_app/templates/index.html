@@ -1,36 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <head>
     <meta charset="UTF-8">
-    <title>CouchDB Management</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-    </style>
+    <title>CouchDB Manager</title>
 </head>
 <body>
-    <h1>CouchDB Management</h1>
-
+    <h1>CouchDB Manager</h1>
+    <nav>
+        <a href="/">Create DB</a>
+        <a href="/upload_json_page">Upload JSON</a>
+    </nav>
     <h2>Create Database</h2>
-    <form action="{{ url_for('create_db') }}" method="post">
-        <input type="text" name="db_name" placeholder="Database Name">
-        <button type="submit">Create Database</button>
-    </form>
+    <div class="viewDataDiv">
+        <form action="{{ url_for('create_db') }}" method="post">
+            <input type="text" name="db_name" placeholder="Database Name">
+            <input type="submit" value="Create Database">
+        </form>
+    </div>
 
     <h2>Existing Databases</h2>
     {% if databases %}
     <table>
         <thead>
             <tr>
+                <th></th>
                 <th>Name</th>
                 <th>Actions</th>
             </tr>
@@ -38,14 +32,16 @@
         <tbody>
             {% for db in databases %}
             <tr>
-                <td><a href="{{ url_for('view_db', db_name=db) }}">{{ db }}</a></td>
-                <td>
+                <td class='td_delete'>
                     <form action="{{ url_for('delete_db', db_name=db) }}" method="post" style="display:inline;">
-                        <button type="submit">Delete</button>
+                        <input type="submit" value="x">
                     </form>
+                </td>
+                <td><a href="{{ url_for('view_db', db_name=db) }}">{{ db }}</a></td>
+                <td class='td_action'>
                     <form action="{{ url_for('rename_db', db_name=db) }}" method="post" style="display:inline;">
                         <input type="text" name="new_db_name" placeholder="New Database Name">
-                        <button type="submit">Rename</button>
+                        <input type="submit" value="Rename">
                     </form>
                 </td>
             </tr>
@@ -53,7 +49,10 @@
         </tbody>
     </table>
     {% else %}
-    <p>No databases found</p>
+    <h4>No databases found</h4>
     {% endif %}
+    <footer>
+        <h4>Site Created by voxten</h4>
+    </footer>
 </body>
 </html>
