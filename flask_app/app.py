@@ -1,8 +1,8 @@
-import os
-import json
 from flask import Flask, request, render_template, redirect, url_for, send_file
 import couchdb
 import tempfile
+import os
+import json
 
 app = Flask(__name__)
 
@@ -18,7 +18,14 @@ couch_client = couchdb.Server(url)
 @app.route('/')
 def home():
     dbs = list(couch_client)
-    return render_template('index.html', databases=dbs)
+
+    sort_by = request.args.get('sort_by', 'name')
+    order = request.args.get('order', 'asc')
+
+    if sort_by == 'name':
+        dbs.sort(reverse=(order == 'desc'))
+
+    return render_template('index.html', databases=dbs, sort_by=sort_by, order=order)
 
 
 @app.route('/create_db', methods=['POST'])
@@ -50,7 +57,7 @@ def upload_json():
             return "Invalid JSON file", 400
 
         if isinstance(data, list):
-            db_name = os.path.splitext(json_file.filename)[0]  # Extract the file name without extension
+            db_name = os.path.splitext(json_file.filename)[0]
             if db_name and db_name not in couch_client:
                 db = couch_client.create(db_name)
                 for collection in data:
@@ -66,8 +73,6 @@ def upload_json():
         return redirect(url_for('home'))
     else:
         return "Invalid file format", 400
-
-
 
 
 @app.route('/rename_db/<db_name>', methods=['POST'])
@@ -110,8 +115,15 @@ def view_db(db_name):
                     collection[name] = content_desc
                 collections.append(collection)
 
+        # Sorting logic
+        sort_by = request.args.get('sort_by', '_id')
+        order = request.args.get('order', 'asc')
+
+        collections.sort(key=lambda x: x[sort_by], reverse=(order == 'desc'))
+
         content_names = sorted(content_names)
-        return render_template('view_db.html', db_name=db_name, collections=collections, content_names=content_names)
+        return render_template('view_db.html', db_name=db_name, collections=collections, content_names=content_names,
+                               sort_by=sort_by, order=order)
     return redirect(url_for('home'))
 
 
@@ -238,20 +250,16 @@ def export_db(db_name):
         for doc_id in db:
             doc = db.get(doc_id)
             if doc:
-                # Exclude '_rev' field from exported data
                 doc.pop('_rev', None)
                 data.append(doc)
 
-        # Create a temporary file and write data to it
         with tempfile.NamedTemporaryFile(delete=False, suffix='.json', mode='w', encoding='utf-8') as tmp_file:
             json.dump(data, tmp_file, indent=4)
             tmp_file_path = tmp_file.name
 
-        # Send the file to the user
         return send_file(tmp_file_path, as_attachment=True, download_name=f"{db_name}.json")
 
     return redirect(url_for('home'))
-
 
 
 if __name__ == '__main__':

@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<script src="{{ url_for('static', filename='scripts.js') }}"></script>
 <head>
     <meta charset="UTF-8">
     <title>CouchDB Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>CouchDB Manager</h1>
@@ -26,7 +25,11 @@
         <thead>
             <tr>
                 <th></th>
-                <th>Name<button onclick="sortTableIndex(1)">Sort</button></th>
+                <th>
+                    Name
+                    <a href="{{ url_for('home', sort_by='name', order='asc') }}">▲</a>
+                    <a href="{{ url_for('home', sort_by='name', order='desc') }}">▼</a>
+                </th>
                 <th>Actions</th>
             </tr>
         </thead>

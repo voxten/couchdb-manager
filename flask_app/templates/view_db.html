@@ -26,9 +26,17 @@
         <thead>
             <tr>
                 <th></th>
-                <th>_id<button onclick="sortTable(1)">Sort</button></th>
+                <th>
+                    _id
+                    <a href="{{ url_for('view_db', db_name=db_name, sort_by='_id', order='asc') }}">▲</a>
+                    <a href="{{ url_for('view_db', db_name=db_name, sort_by='_id', order='desc') }}">▼</a>
+                </th>
                 {% for name in content_names %}
-                <th>{{ name }}<button onclick="sortTable({{ loop.index + 1 }})">Sort</button></th>
+                <th>
+                    {{ name }}
+                    <a href="{{ url_for('view_db', db_name=db_name, sort_by=name, order='asc') }}">▲</a>
+                    <a href="{{ url_for('view_db', db_name=db_name, sort_by=name, order='desc') }}">▼</a>
+                </th>
                 {% endfor %}
                 <th>Actions</th>
             </tr>
@@ -37,16 +45,16 @@
             {% for collection in collections %}
             <tr>
                 <td class="td_delete">
-                    <form action="{{ url_for('delete_collection', db_name=db_name, collection_id=collection._id) }}" method="post" style="display:inline;">
+                    <form action="{{ url_for('delete_collection', db_name=db_name, collection_id=collection['_id']) }}" method="post" style="display:inline;">
                         <input type="submit" value="x">
                     </form>
                 </td>
-                <td><a href="{{ url_for('view_collection', db_name=db_name, collection_id=collection._id) }}">{{ collection._id }}</a></td>
+                <td><a href="{{ url_for('view_collection', db_name=db_name, collection_id=collection['_id']) }}">{{ collection['_id'] }}</a></td>
                 {% for name in content_names %}
                 <td>{{ collection[name] }}</td>
                 {% endfor %}
                 <td class='td_action'>
-                    <form action="{{ url_for('rename_collection', db_name=db_name, collection_id=collection._id) }}" method="post" style="display:inline;">
+                    <form action="{{ url_for('rename_collection', db_name=db_name, collection_id=collection['_id']) }}" method="post" style="display:inline;">
                         <input type="text" name="new_collection_id" placeholder="New Collection ID">
                         <input type="submit" value="Rename">
                     </form>
